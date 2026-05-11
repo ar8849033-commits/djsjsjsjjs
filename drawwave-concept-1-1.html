@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>هيا الى الرسم</title>
+<meta name="application-name" content="هيا الى الرسم">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="هيا الى الرسم">
+<meta name="theme-color" content="#0a0a0f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="description" content="تطبيق رسم اجتماعي يجمع بين الإبداع والتحدي والمجتمع">
+<link rel="manifest" href="manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0a0a0f;
+    --paper: #f5f0e8;
+    --neon: #ff3e6c;
+    --volt: #aaff00;
+    --sky: #00d4ff;
+    --purple: #9b5de5;
+    --orange: #ff9f1c;
+    --card-bg: #13131a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'Cairo', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    position: relative;
+    overflow: hidden;
+    padding: 4rem 2rem;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 20% 40%, rgba(255,62,108,.18) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 60% at 80% 60%, rgba(0,212,255,.14) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 50% 10%, rgba(170,255,0,.10) 0%, transparent 60%);
+    animation: breathe 8s ease-in-out infinite alternate;
+  }
+
+  @keyframes breathe {
+    from { opacity: .7; }
+    to   { opacity: 1; }
+  }
+
+  /* Floating strokes */
+  .stroke {
+    position: absolute;
+    border-radius: 999px;
+    opacity: .15;
+    animation: float 12s ease-in-out infinite;
+  }
+  .s1 { width: 320px; height: 6px; background: var(--neon); top: 18%; left: -80px; transform: rotate(-12deg); animation-delay: 0s; }
+  .s2 { width: 200px; height: 4px; background: var(--sky);  top: 72%; right: -40px; transform: rotate(8deg);  animation-delay: -3s; }
+  .s3 { width: 140px; height: 8px; background: var(--volt); top: 45%; left: 60%;   transform: rotate(25deg);  animation-delay: -6s; }
+  .s4 { width: 80px;  height: 80px; border: 3px solid var(--purple); border-radius: 50%; top: 25%; right: 15%; animation-delay: -4s; }
+
+  @keyframes float {
+    0%,100% { transform: translateY(0) rotate(var(--r,0deg)); }
+    50%      { transform: translateY(-24px) rotate(var(--r,0deg)); }
+  }
+
+  .hero-content { position: relative; text-align: center; max-width: 800px; }
+
+  .app-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--neon), var(--purple));
+    color: #fff;
+    font-size: .78rem;
+    font-weight: 700;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    padding: .4rem 1.2rem;
+    border-radius: 999px;
+    margin-bottom: 1.6rem;
+    animation: fadeDown .8s ease both;
+  }
+
+  .hero-title {
+    font-size: clamp(3.5rem, 10vw, 8rem);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -.03em;
+    animation: fadeDown .9s .1s ease both;
+  }
+
+  .hero-title span { color: var(--neon); display: block; }
+
+  .hero-sub {
+    font-size: clamp(1rem, 2.5vw, 1.35rem);
+    color: rgba(245,240,232,.6);
+    margin: 1.5rem auto 2.5rem;
+    max-width: 520px;
+    line-height: 1.8;
+    animation: fadeDown 1s .2s ease both;
+  }
+
+  .platform-badges {
+    display: flex;
+    gap: .8rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    animation: fadeDown 1s .3s ease both;
+  }
+
+  .plat {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    border: 1.5px solid rgba(245,240,232,.2);
+    border-radius: 999px;
+    padding: .6rem 1.4rem;
+    font-size: .9rem;
+    font-weight: 600;
+    backdrop-filter: blur(8px);
+    transition: border-color .3s, transform .3s;
+  }
+  .plat:hover { border-color: var(--neon); transform: translateY(-3px); }
+  .plat svg { width: 18px; height: 18px; fill: currentColor; }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── SECTION SHARED ── */
+  section { padding: 6rem 2rem; max-width: 1100px; margin: 0 auto; }
+
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: .72rem;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--neon);
+    margin-bottom: .8rem;
+  }
+
+  h2 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+  }
+
+  /* ── FEATURES GRID ── */
+  .features-wrap { max-width: 1100px; margin: 0 auto; padding: 0 2rem 6rem; }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.4rem;
+    margin-top: 3rem;
+  }
+
+  .feat-card {
+    background: var(--card-bg);
+    border: 1.5px solid rgba(255,255,255,.07);
+    border-radius: 20px;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    transition: transform .3s, border-color .3s, box-shadow .3s;
+  }
+  .feat-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--accent, var(--neon));
+    box-shadow: 0 20px 60px -10px rgba(0,0,0,.5);
+  }
+  .feat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--accent, var(--neon));
+    border-radius: 20px 20px 0 0;
+  }
+
+  .feat-icon {
+    font-size: 2.4rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .feat-card h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: .6rem;
+    color: var(--paper);
+  }
+
+  .feat-card p {
+    font-size: .95rem;
+    color: rgba(245,240,232,.55);
+    line-height: 1.75;
+  }
+
+  /* ── CHALLENGE SECTION ── */
+  .challenges-wrap {
+    background: linear-gradient(135deg, rgba(255,62,108,.08), rgba(155,93,229,.08));
+    border-top: 1px solid rgba(255,255,255,.06);
+    border-bottom: 1px solid rgba(255,255,255,.06);
+    padding: 6rem 2rem;
+  }
+
+  .challenges-inner { max-width: 1100px; margin: 0 auto; }
+
+  .challenges-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.2rem;
+    margin-top: 3rem;
+  }
+
+  .challenge-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    background: rgba(255,255,255,.04);
+    border: 1.5px solid rgba(255,255,255,.08);
+    border-radius: 16px;
+    padding: 1.5rem;
+    transition: background .3s, transform .3s;
+  }
+  .challenge-item:hover { background: rgba(255,255,255,.08); transform: translateX(-6px); }
+
+  .ch-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--volt);
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .ch-text h4 { font-size: 1rem; font-weight: 700; margin-bottom: .4rem; }
+  .ch-text p  { font-size: .88rem; color: rgba(245,240,232,.5); line-height: 1.6; }
+
+  /* ── SOCIAL FEED MOCK ── */
+  .social-wrap { max-width: 1100px; margin: 0 auto; padding: 6rem 2rem; }
+
+  .feed-preview {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 3rem;
+  }
+
+  .feed-card {
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    aspect-ratio: 1;
+    background: var(--card-bg);
+    border: 1.5px solid rgba(255,255,255,.07);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    font-size: 2.5rem;
+    transition: transform .3s;
+    cursor: pointer;
+  }
+  .feed-card:hover { transform: scale(1.04); }
+
+  .feed-card .fc-label {
+    font-size: .75rem;
+    color: rgba(245,240,232,.45);
+    font-weight: 600;
+  }
+
+  .feed-card .fc-likes {
+    position: absolute;
+    bottom: .75rem;
+    left: .75rem;
+    display: flex;
+    align-items: center;
+    gap: .35rem;
+    font-size: .75rem;
+    color: var(--neon);
+    font-weight: 700;
+  }
+
+  .live-dot {
+    position: absolute;
+    top: .75rem;
+    right: .75rem;
+    width: 8px; height: 8px;
+    background: var(--volt);
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px rgba(170,255,0,.3);
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%,100% { box-shadow: 0 0 0 3px rgba(170,255,0,.3); }
+    50%      { box-shadow: 0 0 0 8px rgba(170,255,0,.05); }
+  }
+
+  /* ── TECH STACK ── */
+  .tech-wrap { max-width: 1100px; margin: 0 auto; padding: 0 2rem 6rem; }
+
+  .tech-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .8rem;
+    margin-top: 2rem;
+  }
+
+  .pill {
+    background: rgba(255,255,255,.05);
+    border: 1.5px solid rgba(255,255,255,.1);
+    border-radius: 999px;
+    padding: .5rem 1.2rem;
+    font-size: .9rem;
+    font-weight: 600;
+    transition: background .2s, color .2s;
+  }
+  .pill:hover { background: var(--neon); color: #000; border-color: var(--neon); }
+
+  /* ── MONETIZE ── */
+  .money-wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 2rem 8rem;
+  }
+
+  .money-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-top: 3rem;
+  }
+
+  .money-card {
+    border-radius: 16px;
+    padding: 1.8rem;
+    border: 1.5px solid rgba(255,255,255,.08);
+    background: var(--card-bg);
+    transition: transform .3s;
+  }
+  .money-card:hover { transform: translateY(-5px); }
+  .money-card .mc-icon { font-size: 2rem; margin-bottom: .8rem; }
+  .money-card h4 { font-size: 1rem; font-weight: 700; margin-bottom: .5rem; }
+  .money-card p  { font-size: .88rem; color: rgba(245,240,232,.5); line-height: 1.6; }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid rgba(255,255,255,.07);
+    text-align: center;
+    padding: 3rem 2rem;
+    color: rgba(245,240,232,.3);
+    font-size: .85rem;
+  }
+  footer strong { color: var(--neon); }
+
+  /* responsive */
+  @media (max-width: 600px) {
+    .feed-preview { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="stroke s1"></div>
+  <div class="stroke s2"></div>
+  <div class="stroke s3"></div>
+  <div class="stroke s4"></div>
+  <div class="hero-content">
+    <div class="app-badge">✦ فكرة تطبيق &nbsp;·&nbsp; هيا الى الرسم</div>
+    <h1 class="hero-title">
+      هيا الى<span>الرسم</span>
+    </h1>
+    <p class="hero-sub">
+      تطبيق رسم اجتماعي يجمع بين الإبداع والتحدي والمجتمع —
+      ارسم، شاهد الآخرين، وتنافس في تحديات يومية حية مع <strong>هيا الى الرسم</strong>
+    </p>
+    <div class="platform-badges">
+      <div class="plat">
+        <svg viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+        iOS – iPhone
+      </div>
+      <div class="plat">
+        <svg viewBox="0 0 24 24"><path d="M17.523 15.34l1.5-2.598a.5.5 0 0 0-.183-.683l-1.5-.866a6.5 6.5 0 0 0 0-2.386l1.5-.866a.5.5 0 0 0 .183-.683l-1.5-2.598a.5.5 0 0 0-.683-.183l-1.576.91A6.5 6.5 0 0 0 13 4.827V3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v1.827a6.5 6.5 0 0 0-2.063 1.189l-1.576-.91a.5.5 0 0 0-.683.183L3.18 7.887a.5.5 0 0 0 .183.683l1.5.866a6.5 6.5 0 0 0 0 2.386l-1.5.866a.5.5 0 0 0-.183.683l1.5 2.598a.5.5 0 0 0 .683.183l1.576-.91A6.5 6.5 0 0 0 9 16.173V18a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-1.827a6.5 6.5 0 0 0 2.063-1.189l1.576.91a.5.5 0 0 0 .683-.183zM12 14.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z"/></svg>
+        Android
+      </div>
+      <div class="plat" style="border-color:rgba(170,255,0,.3); color:var(--volt)">
+        ✦ مجاني + اشتراك
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<div class="features-wrap">
+  <div class="section-label">// المميزات الرئيسية</div>
+  <h2>كل أدوات الإبداع <br>في مكان واحد</h2>
+  <div class="features-grid">
+
+    <div class="feat-card" style="--accent:#ff3e6c">
+      <span class="feat-icon">🎨</span>
+      <h3>لوحة رسم ذكية</h3>
+      <p>فرش وأقلام وطلاء بتأثيرات واقعية، ضغط حساس للأصابع والقلم، طبقات متعددة، وتراجع لا نهائي.</p>
+    </div>
+
+    <div class="feat-card" style="--accent:#00d4ff">
+      <span class="feat-icon">🌐</span>
+      <h3>الفيد الاجتماعي</h3>
+      <p>شاهد رسومات المجتمع في لحظتها الحقيقية — فيد مباشر يُظهر كيف رسم الفنانون لوحاتهم خطوة بخطوة.</p>
+    </div>
+
+    <div class="feat-card" style="--accent:#aaff00">
+      <span class="feat-icon">⚡</span>
+      <h3>التحديات اليومية</h3>
+      <p>تحدٍّ جديد كل يوم بوقت محدد — 60 ثانية، 5 دقائق، أو تحدي موضوع أسبوعي. صوّت لأفضل رسمة!</p>
+    </div>
+
+    <div class="feat-card" style="--accent:#9b5de5">
+      <span class="feat-icon">📽️</span>
+      <h3>تشغيل سريع Time-lapse</h3>
+      <p>كل رسمة تُحفظ تلقائيًا كفيديو سريع تستطيع مشاركته في القصص أو المنشورات بضغطة واحدة.</p>
+    </div>
+
+    <div class="feat-card" style="--accent:#ff9f1c">
+      <span class="feat-icon">🏆</span>
+      <h3>الرتب والنقاط</h3>
+      <p>نظام XP وشارات للفنانين — من مبتدئ إلى أسطورة. تصدّر لوحة المتصدرين الأسبوعية.</p>
+    </div>
+
+    <div class="feat-card" style="--accent:#ff3e6c">
+      <span class="feat-icon">🤝</span>
+      <h3>الرسم التعاوني</h3>
+      <p>اغرف مع صديق أو غريب على نفس اللوحة في الوقت الفعلي — مثل Google Docs لكن للرسم.</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- CHALLENGES -->
+<div class="challenges-wrap">
+  <div class="challenges-inner">
+    <div class="section-label">// نظام التحديات</div>
+    <h2>ارسم. تنافس. <br>اربح المجد 🔥</h2>
+    <div class="challenges-list">
+
+      <div class="challenge-item">
+        <div class="ch-num">01</div>
+        <div class="ch-text">
+          <h4>تحدي اليوم – ⏱ 60 ثانية</h4>
+          <p>موضوع مفاجئ كل يوم. ارسم في دقيقة واحدة فقط ثم تبدأ التصويتات فوراً.</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="ch-num">02</div>
+        <div class="ch-text">
+          <h4>تحدي الأسبوع – موضوع حر</h4>
+          <p>أسبوع كامل لإنجاز لوحة احترافية. الفائز يحصل على شارة ذهبية ومكانة في الصفحة الرئيسية.</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="ch-num">03</div>
+        <div class="ch-text">
+          <h4>تحدي ضد خصم – 1v1</h4>
+          <p>تحدِّ صديقاً أو غريباً على نفس الموضوع. المجتمع يصوت للفائز خلال 24 ساعة.</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="ch-num">04</div>
+        <div class="ch-text">
+          <h4>تحدي العمى – Blind Draw</h4>
+          <p>ارسم وأنت لا ترى شاشتك! الكاميرا تراقب يدك وتُظهر النتيجة بعد الانتهاء — مضحك وتنافسي.</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="ch-num">05</div>
+        <div class="ch-text">
+          <h4>تحدي إكمال الرسمة</h4>
+          <p>شخص يبدأ نصف لوحة وآخر يُكمل الباقي. النتائج دائمًا مفاجئة ومبدعة.</p>
+        </div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="ch-num">06</div>
+        <div class="ch-text">
+          <h4>تحدي المرآة</h4>
+          <p>انسخ رسمة فنان مشهور باستخدام أدواتك فقط. الشبه الأعلى يفوز بالتصويت.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SOCIAL FEED MOCK -->
+<div class="social-wrap">
+  <div class="section-label">// الفيد الاجتماعي</div>
+  <h2>شاهد العالم يرسم <br>في الوقت الحقيقي</h2>
+  <p style="color:rgba(245,240,232,.5); margin-top:.8rem; line-height:1.8">
+    الفيد الرئيسي يعرض رسومات المجتمع مرتّبة بالجديد، الأكثر تفاعلاً، أو الأصدقاء فقط.
+    النقطة الخضراء تعني أن الفنان يرسم الآن!
+  </p>
+  <div class="feed-preview">
+    <div class="feed-card" style="background:linear-gradient(135deg,#1a0a2e,#16213e)">
+      <div class="live-dot"></div>
+      🌊
+      <span class="fc-label">موجة كيوتو</span>
+      <div class="fc-likes">❤️ 842</div>
+    </div>
+    <div class="feed-card" style="background:linear-gradient(135deg,#0d1f0d,#1a2e1a)">
+      🦋
+      <span class="fc-label">فراشة مجردة</span>
+      <div class="fc-likes">❤️ 1.2k</div>
+    </div>
+    <div class="feed-card" style="background:linear-gradient(135deg,#2e0d0d,#1a0a0a)">
+      <div class="live-dot"></div>
+      🌙
+      <span class="fc-label">ليلة هادئة</span>
+      <div class="fc-likes">❤️ 390</div>
+    </div>
+    <div class="feed-card" style="background:linear-gradient(135deg,#1a1a0d,#2e2e0d)">
+      🏙️
+      <span class="fc-label">مدينة المستقبل</span>
+      <div class="fc-likes">❤️ 2.1k</div>
+    </div>
+    <div class="feed-card" style="background:linear-gradient(135deg,#0d1a2e,#0a1520)">
+      <div class="live-dot"></div>
+      🐉
+      <span class="fc-label">تنين الشرق</span>
+      <div class="fc-likes">❤️ 677</div>
+    </div>
+    <div class="feed-card" style="background:linear-gradient(135deg,#1f0d2e,#130a1a)">
+      🌸
+      <span class="fc-label">ربيع ياباني</span>
+      <div class="fc-likes">❤️ 934</div>
+    </div>
+  </div>
+</div>
+
+<!-- TECH STACK -->
+<div class="tech-wrap">
+  <div class="section-label">// التقنيات المقترحة</div>
+  <h2>Stack التطوير</h2>
+  <div class="tech-pills">
+    <span class="pill">React Native</span>
+    <span class="pill">Expo</span>
+    <span class="pill">Skia Canvas</span>
+    <span class="pill">Firebase Realtime DB</span>
+    <span class="pill">WebSockets</span>
+    <span class="pill">Node.js</span>
+    <span class="pill">Redis</span>
+    <span class="pill">AWS S3</span>
+    <span class="pill">FFmpeg (Time-lapse)</span>
+    <span class="pill">Socket.io</span>
+    <span class="pill">TensorFlow Lite (AI brush)</span>
+    <span class="pill">Stripe</span>
+  </div>
+</div>
+
+<!-- MONETIZATION -->
+<div class="money-wrap">
+  <div class="section-label">// نموذج الربح</div>
+  <h2>كيف يربح التطبيق؟</h2>
+  <div class="money-grid">
+    <div class="money-card">
+      <div class="mc-icon">⭐</div>
+      <h4>DrawWave Pro</h4>
+      <p>اشتراك شهري / سنوي — فرش حصرية، بدون إعلانات، مساحة تخزين غير محدودة.</p>
+    </div>
+    <div class="money-card">
+      <div class="mc-icon">🖌️</div>
+      <h4>متجر الأدوات</h4>
+      <p>حزم فرش ومؤثرات وخلفيات تُباع بشكل فردي أو كحزم موسمية.</p>
+    </div>
+    <div class="money-card">
+      <div class="mc-icon">🏅</div>
+      <h4>تحديات مدفوعة</h4>
+      <p>بطولات بجوائز حقيقية تموّلها الرسوم التنافسية أو الرعاة.</p>
+    </div>
+    <div class="money-card">
+      <div class="mc-icon">🖼️</div>
+      <h4>بيع الأعمال NFT/Print</h4>
+      <p>فنانون يبيعون رسوماتهم مباشرة من التطبيق — التطبيق يأخذ عمولة 10٪.</p>
+    </div>
+  </div>
+</div>
+
+<!-- OFFLINE SECTION -->
+<div style="max-width:1100px; margin:0 auto; padding:0 2rem 8rem;">
+  <div class="section-label">// وضع بدون إنترنت</div>
+  <h2>ارسم في أي مكان 📵<br>حتى بدون نت</h2>
+  <p style="color:rgba(245,240,232,.5); margin-top:.8rem; line-height:1.8; max-width:560px">
+    التطبيق يشتغل بشكل كامل offline — كل أدوات الرسم متاحة حتى لو ما عندك اتصال.
+    وبمجرد ما ترجع للنت تنزامن رسوماتك تلقائياً.
+  </p>
+
+  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:1.2rem; margin-top:2.5rem;">
+
+    <div style="background:#13131a; border:1.5px solid rgba(0,212,255,.25); border-radius:20px; padding:2rem; position:relative; overflow:hidden; transition:transform .3s;" onmouseover="this.style.transform='translateY(-6px)'" onmouseout="this.style.transform='translateY(0)'">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:#00d4ff;border-radius:20px 20px 0 0"></div>
+      <div style="font-size:2.2rem;margin-bottom:1rem">✏️</div>
+      <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:.6rem">كل الأدوات تشتغل</h3>
+      <p style="font-size:.9rem;color:rgba(245,240,232,.5);line-height:1.75">فرش، أقلام، ألوان، طبقات، وتراجع لا نهائي — كلها تشتغل 100٪ بدون إنترنت.</p>
+    </div>
+
+    <div style="background:#13131a; border:1.5px solid rgba(170,255,0,.25); border-radius:20px; padding:2rem; position:relative; overflow:hidden; transition:transform .3s;" onmouseover="this.style.transform='translateY(-6px)'" onmouseout="this.style.transform='translateY(0)'">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:#aaff00;border-radius:20px 20px 0 0"></div>
+      <div style="font-size:2.2rem;margin-bottom:1rem">💾</div>
+      <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:.6rem">حفظ محلي تلقائي</h3>
+      <p style="font-size:.9rem;color:rgba(245,240,232,.5);line-height:1.75">رسوماتك تتحفظ على جهازك فوراً — ما راح تخسر أي شيء حتى لو أغلقت التطبيق فجأة.</p>
+    </div>
+
+    <div style="background:#13131a; border:1.5px solid rgba(255,159,28,.25); border-radius:20px; padding:2rem; position:relative; overflow:hidden; transition:transform .3s;" onmouseover="this.style.transform='translateY(-6px)'" onmouseout="this.style.transform='translateY(0)'">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:#ff9f1c;border-radius:20px 20px 0 0"></div>
+      <div style="font-size:2.2rem;margin-bottom:1rem">☁️</div>
+      <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:.6rem">مزامنة تلقائية</h3>
+      <p style="font-size:.9rem;color:rgba(245,240,232,.5);line-height:1.75">بمجرد ما ترجع للإنترنت، كل رسوماتك تنزامن للسحابة وتظهر في فيدك الاجتماعي.</p>
+    </div>
+
+    <div style="background:#13131a; border:1.5px solid rgba(155,93,229,.25); border-radius:20px; padding:2rem; position:relative; overflow:hidden; transition:transform .3s;" onmouseover="this.style.transform='translateY(-6px)'" onmouseout="this.style.transform='translateY(0)'">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:#9b5de5;border-radius:20px 20px 0 0"></div>
+      <div style="font-size:2.2rem;margin-bottom:1rem">📁</div>
+      <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:.6rem">مكتبة شخصية</h3>
+      <p style="font-size:.9rem;color:rgba(245,240,232,.5);line-height:1.75">كل رسوماتك محفوظة في مكتبة تقدر تفتحها وتعدل عليها في أي وقت حتى بالطيران.</p>
+    </div>
+
+  </div>
+
+  <!-- offline indicator banner -->
+  <div style="margin-top:2rem; background:linear-gradient(135deg,rgba(170,255,0,.08),rgba(0,212,255,.08)); border:1.5px solid rgba(170,255,0,.2); border-radius:16px; padding:1.5rem 2rem; display:flex; align-items:center; gap:1rem; flex-wrap:wrap;">
+    <div style="width:12px;height:12px;background:#aaff00;border-radius:50%;box-shadow:0 0 0 4px rgba(170,255,0,.2);flex-shrink:0"></div>
+    <div>
+      <strong style="color:#aaff00;font-size:.95rem">وضع Offline نشط</strong>
+      <p style="font-size:.85rem;color:rgba(245,240,232,.5);margin-top:.2rem">التطبيق يكتشف الاتصال تلقائياً ويبدّل بين الوضعين بدون ما تحس بأي فرق.</p>
+    </div>
+  </div>
+</div>
+
+
+
+<footer>
+  مفهوم تطبيق &nbsp;<strong>هيا الى الرسم</strong>&nbsp; – أُنشئ بواسطة Claude ✦ Anthropic
+</footer>
+
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js')
+        .then(reg => console.log('SW registered'))
+        .catch(err => console.log('SW error:', err));
+    });
+  }
+</script>
+</body>
+</html>
