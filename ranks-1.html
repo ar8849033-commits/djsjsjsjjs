@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>هيا الى الرسم – الرتب والنقاط</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+  :root {
+    --ink: #0a0a0f;
+    --neon: #ff3e6c;
+    --volt: #aaff00;
+    --sky: #00d4ff;
+    --purple: #9b5de5;
+    --orange: #ff9f1c;
+    --gold: #ffd700;
+    --silver: #c0c0c0;
+    --bronze: #cd7f32;
+  }
+
+  body {
+    background: var(--ink);
+    font-family: 'Cairo', sans-serif;
+    color: #fff;
+    min-height: 100dvh;
+    overflow-x: hidden;
+  }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    position: sticky;
+    top: 0;
+    background: rgba(10,10,15,.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,.08);
+    padding: 1rem 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: .8rem;
+    z-index: 20;
+  }
+  .back-btn {
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 10px;
+    color: #fff;
+    font-size: 1.1rem;
+    width: 38px; height: 38px;
+    display: flex; align-items:center; justify-content:center;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .page-title { font-size: 1.1rem; font-weight: 900; flex:1; }
+  .xp-badge {
+    background: linear-gradient(135deg, var(--volt), #5cb800);
+    color: #000;
+    font-weight: 900;
+    font-size: .8rem;
+    padding: .35rem .9rem;
+    border-radius: 999px;
+  }
+
+  /* ── PROFILE CARD ── */
+  .profile-card {
+    margin: 1.2rem;
+    background: linear-gradient(135deg, #1a0d2e, #0d1a2e);
+    border: 2px solid rgba(155,93,229,.3);
+    border-radius: 24px;
+    padding: 1.8rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .profile-card::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 160px; height: 160px;
+    background: radial-gradient(circle, rgba(155,93,229,.2), transparent 70%);
+    border-radius: 50%;
+  }
+
+  .profile-top {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.4rem;
+  }
+
+  .avatar {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--purple), var(--neon));
+    display: flex; align-items:center; justify-content:center;
+    font-size: 2rem;
+    flex-shrink: 0;
+    box-shadow: 0 0 20px rgba(155,93,229,.4);
+  }
+
+  .profile-info { flex: 1; }
+  .profile-name { font-size: 1.2rem; font-weight: 900; }
+  .profile-rank {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    background: rgba(255,255,255,.07);
+    border-radius: 999px;
+    padding: .25rem .8rem;
+    font-size: .8rem;
+    margin-top: .3rem;
+    font-weight: 700;
+  }
+
+  /* XP Bar */
+  .xp-section { }
+  .xp-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: .8rem;
+    color: rgba(255,255,255,.5);
+    margin-bottom: .5rem;
+  }
+  .xp-bar-wrap {
+    background: rgba(255,255,255,.08);
+    border-radius: 999px;
+    height: 10px;
+    overflow: hidden;
+  }
+  .xp-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--purple), var(--neon));
+    box-shadow: 0 0 12px rgba(255,62,108,.4);
+    transition: width 1.2s cubic-bezier(.4,0,.2,1);
+    width: 0%;
+  }
+  .xp-next { font-size: .78rem; color: rgba(255,255,255,.35); margin-top: .4rem; text-align: left; }
+
+  /* Stats row */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: .8rem;
+    margin: 1.2rem;
+  }
+  .stat-card {
+    background: #13131a;
+    border: 1.5px solid rgba(255,255,255,.07);
+    border-radius: 16px;
+    padding: 1rem;
+    text-align: center;
+  }
+  .stat-val {
+    font-size: 1.6rem;
+    font-weight: 900;
+    font-family: 'Space Mono', monospace;
+  }
+  .stat-lbl { font-size: .72rem; color: rgba(255,255,255,.4); margin-top: .2rem; }
+
+  /* ── TABS ── */
+  .tabs {
+    display: flex;
+    margin: 0 1.2rem 1rem;
+    background: rgba(255,255,255,.04);
+    border-radius: 12px;
+    padding: .3rem;
+    gap: .2rem;
+  }
+  .tab {
+    flex: 1;
+    padding: .55rem;
+    border-radius: 9px;
+    border: none;
+    background: transparent;
+    color: rgba(255,255,255,.4);
+    font-family: 'Cairo', sans-serif;
+    font-size: .85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .tab.active {
+    background: var(--neon);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(255,62,108,.3);
+  }
+
+  .tab-content { display: none; padding: 0 1.2rem 6rem; }
+  .tab-content.active { display: block; }
+
+  /* ── RANKS LIST ── */
+  .rank-item {
+    background: #13131a;
+    border: 1.5px solid rgba(255,255,255,.07);
+    border-radius: 16px;
+    padding: 1.1rem 1.2rem;
+    margin-bottom: .8rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: transform .2s, border-color .2s;
+    cursor: default;
+  }
+  .rank-item:active { transform: scale(.98); }
+  .rank-item.current {
+    border-color: var(--purple);
+    background: linear-gradient(135deg, rgba(155,93,229,.08), rgba(255,62,108,.05));
+  }
+  .rank-item.locked { opacity: .45; }
+
+  .rank-icon { font-size: 2.2rem; flex-shrink:0; width:48px; text-align:center; }
+  .rank-info { flex:1; }
+  .rank-name { font-size: 1rem; font-weight: 700; }
+  .rank-range { font-size: .78rem; color: rgba(255,255,255,.4); margin-top: .15rem; }
+  .rank-req {
+    font-size: .72rem;
+    font-family: 'Space Mono', monospace;
+    color: var(--volt);
+    margin-top: .3rem;
+  }
+  .rank-badge {
+    padding: .3rem .7rem;
+    border-radius: 999px;
+    font-size: .72rem;
+    font-weight: 700;
+    flex-shrink:0;
+  }
+  .badge-current { background: var(--purple); color: #fff; }
+  .badge-done    { background: rgba(170,255,0,.15); color: var(--volt); border: 1px solid rgba(170,255,0,.3); }
+  .badge-locked  { background: rgba(255,255,255,.06); color: rgba(255,255,255,.3); }
+
+  /* ── LEADERBOARD ── */
+  .leader-item {
+    display: flex;
+    align-items: center;
+    gap: .9rem;
+    padding: .9rem 1rem;
+    border-radius: 14px;
+    margin-bottom: .6rem;
+    background: #13131a;
+    border: 1.5px solid rgba(255,255,255,.06);
+    transition: transform .15s;
+  }
+  .leader-item:active { transform: scale(.98); }
+  .leader-item.top1 { background: linear-gradient(135deg, rgba(255,215,0,.08), rgba(255,159,28,.05)); border-color: rgba(255,215,0,.3); }
+  .leader-item.top2 { background: linear-gradient(135deg, rgba(192,192,192,.07), transparent); border-color: rgba(192,192,192,.2); }
+  .leader-item.top3 { background: linear-gradient(135deg, rgba(205,127,50,.07), transparent); border-color: rgba(205,127,50,.2); }
+  .leader-item.me   { border-color: var(--purple); background: rgba(155,93,229,.07); }
+
+  .pos {
+    font-family: 'Space Mono', monospace;
+    font-size: 1rem;
+    font-weight: 700;
+    width: 28px;
+    text-align: center;
+    flex-shrink:0;
+  }
+  .pos.gold   { color: var(--gold); }
+  .pos.silver { color: var(--silver); }
+  .pos.bronze { color: var(--bronze); }
+
+  .leader-avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    display: flex; align-items:center; justify-content:center;
+    font-size: 1.3rem;
+    flex-shrink:0;
+  }
+  .leader-name { font-size: .92rem; font-weight: 700; flex:1; }
+  .leader-sub  { font-size: .72rem; color: rgba(255,255,255,.35); }
+  .leader-xp {
+    font-family: 'Space Mono', monospace;
+    font-size: .85rem;
+    font-weight: 700;
+    color: var(--volt);
+    flex-shrink:0;
+  }
+
+  /* ── BADGES ── */
+  .badges-grid {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: .8rem;
+  }
+  .badge-card {
+    background: #13131a;
+    border: 1.5px solid rgba(255,255,255,.07);
+    border-radius: 16px;
+    padding: 1rem .8rem;
+    text-align: center;
+    transition: transform .2s;
+  }
+  .badge-card:active { transform: scale(.95); }
+  .badge-card.earned { border-color: rgba(170,255,0,.25); }
+  .badge-card.locked-badge { opacity:.4; filter:grayscale(1); }
+  .badge-emoji { font-size: 2rem; margin-bottom: .4rem; }
+  .badge-name  { font-size: .72rem; font-weight: 700; line-height:1.3; }
+  .badge-desc  { font-size: .62rem; color: rgba(255,255,255,.35); margin-top:.2rem; }
+
+  /* ── DAILY MISSIONS ── */
+  .mission-item {
+    background: #13131a;
+    border: 1.5px solid rgba(255,255,255,.07);
+    border-radius: 14px;
+    padding: 1rem 1.1rem;
+    margin-bottom: .7rem;
+    display: flex;
+    align-items: center;
+    gap: .9rem;
+  }
+  .mission-icon { font-size: 1.6rem; flex-shrink:0; }
+  .mission-info { flex:1; }
+  .mission-title { font-size: .9rem; font-weight: 700; }
+  .mission-prog-wrap {
+    background: rgba(255,255,255,.08);
+    border-radius: 999px;
+    height: 6px;
+    margin-top: .5rem;
+    overflow: hidden;
+  }
+  .mission-prog-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--sky), var(--purple));
+    transition: width 1s ease;
+  }
+  .mission-reward {
+    font-size: .78rem;
+    font-weight: 700;
+    color: var(--volt);
+    flex-shrink:0;
+    text-align: center;
+  }
+  .mission-done {
+    font-size: .78rem;
+    color: var(--volt);
+    flex-shrink:0;
+  }
+
+  /* bottom nav */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0; left:0; right:0;
+    background: rgba(10,10,15,.97);
+    border-top: 1px solid rgba(255,255,255,.08);
+    display: flex;
+    padding: .6rem 0 calc(.6rem + env(safe-area-inset-bottom));
+    z-index: 30;
+  }
+  .nav-btn {
+    flex:1;
+    display:flex; flex-direction:column; align-items:center; gap:.2rem;
+    font-size: .62rem;
+    color: rgba(255,255,255,.35);
+    text-decoration:none;
+    cursor:pointer;
+    border:none; background:none; font-family:'Cairo',sans-serif;
+    transition: color .2s;
+  }
+  .nav-btn.active { color: var(--neon); }
+  .nav-btn .nav-icon { font-size: 1.4rem; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <a class="back-btn" href="rasim.html">←</a>
+  <span class="page-title">🏆 الرتب والنقاط</span>
+  <div class="xp-badge" id="topXP">1,240 XP</div>
+</div>
+
+<!-- PROFILE CARD -->
+<div class="profile-card">
+  <div class="profile-top">
+    <div class="avatar">🎨</div>
+    <div class="profile-info">
+      <div class="profile-name">أنت – الفنان</div>
+      <div class="profile-rank"><span>🌟</span> متقدم</div>
+    </div>
+  </div>
+  <div class="xp-section">
+    <div class="xp-header">
+      <span>1,240 XP</span>
+      <span>المستوى التالي: 2,000 XP</span>
+    </div>
+    <div class="xp-bar-wrap">
+      <div class="xp-bar-fill" id="xpFill"></div>
+    </div>
+    <div class="xp-next">يتبقى 760 XP للترقية ⚡</div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-row">
+  <div class="stat-card">
+    <div class="stat-val" style="color:var(--neon)">47</div>
+    <div class="stat-lbl">رسمة</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val" style="color:var(--volt)">12</div>
+    <div class="stat-lbl">تحدي فزت</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val" style="color:var(--sky)">8</div>
+    <div class="stat-lbl">شارات</div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('ranks')">الرتب</button>
+  <button class="tab" onclick="switchTab('leaders')">المتصدرون</button>
+  <button class="tab" onclick="switchTab('badges')">الشارات</button>
+  <button class="tab" onclick="switchTab('missions')">المهام</button>
+</div>
+
+<!-- TAB: RANKS -->
+<div class="tab-content active" id="tab-ranks">
+
+  <div class="rank-item" style="border-color:rgba(170,255,0,.25)">
+    <div class="rank-icon">🌱</div>
+    <div class="rank-info">
+      <div class="rank-name">مبتدئ</div>
+      <div class="rank-range">0 – 199 XP</div>
+      <div class="rank-req">✓ مكتمل</div>
+    </div>
+    <div class="rank-badge badge-done">مكتمل</div>
+  </div>
+
+  <div class="rank-item" style="border-color:rgba(170,255,0,.25)">
+    <div class="rank-icon">🎯</div>
+    <div class="rank-info">
+      <div class="rank-name">متعلم</div>
+      <div class="rank-range">200 – 499 XP</div>
+      <div class="rank-req">✓ مكتمل</div>
+    </div>
+    <div class="rank-badge badge-done">مكتمل</div>
+  </div>
+
+  <div class="rank-item" style="border-color:rgba(170,255,0,.25)">
+    <div class="rank-icon">🖌️</div>
+    <div class="rank-info">
+      <div class="rank-name">رسام</div>
+      <div class="rank-range">500 – 999 XP</div>
+      <div class="rank-req">✓ مكتمل</div>
+    </div>
+    <div class="rank-badge badge-done">مكتمل</div>
+  </div>
+
+  <div class="rank-item current">
+    <div class="rank-icon">🌟</div>
+    <div class="rank-info">
+      <div class="rank-name">متقدم</div>
+      <div class="rank-range">1,000 – 1,999 XP</div>
+      <div class="rank-req">أنت هنا • 1,240 XP</div>
+    </div>
+    <div class="rank-badge badge-current">الآن</div>
+  </div>
+
+  <div class="rank-item locked">
+    <div class="rank-icon">💎</div>
+    <div class="rank-info">
+      <div class="rank-name">محترف</div>
+      <div class="rank-range">2,000 – 4,999 XP</div>
+      <div class="rank-req">يتبقى 760 XP</div>
+    </div>
+    <div class="rank-badge badge-locked">مقفل</div>
+  </div>
+
+  <div class="rank-item locked">
+    <div class="rank-icon">👑</div>
+    <div class="rank-info">
+      <div class="rank-name">خبير</div>
+      <div class="rank-range">5,000 – 9,999 XP</div>
+      <div class="rank-req">يتبقى 3,760 XP</div>
+    </div>
+    <div class="rank-badge badge-locked">مقفل</div>
+  </div>
+
+  <div class="rank-item locked">
+    <div class="rank-icon">🔥</div>
+    <div class="rank-info">
+      <div class="rank-name">أسطورة</div>
+      <div class="rank-range">10,000+ XP</div>
+      <div class="rank-req">يتبقى 8,760 XP</div>
+    </div>
+    <div class="rank-badge badge-locked">مقفل</div>
+  </div>
+
+</div>
+
+<!-- TAB: LEADERBOARD -->
+<div class="tab-content" id="tab-leaders">
+
+  <div class="leader-item top1">
+    <div class="pos gold">🥇</div>
+    <div class="leader-avatar" style="background:linear-gradient(135deg,#ffd700,#ff9f1c)">👑</div>
+    <div>
+      <div class="leader-name">فيصل الرسام</div>
+      <div class="leader-sub">أسطورة • 23 رسمة هذا الأسبوع</div>
+    </div>
+    <div class="leader-xp">12,480</div>
+  </div>
+
+  <div class="leader-item top2">
+    <div class="pos silver">🥈</div>
+    <div class="leader-avatar" style="background:linear-gradient(135deg,#c0c0c0,#888)">🎨</div>
+    <div>
+      <div class="leader-name">نورة الإبداع</div>
+      <div class="leader-sub">خبير • 18 رسمة</div>
+    </div>
+    <div class="leader-xp">9,200</div>
+  </div>
+
+  <div class="leader-item top3">
+    <div class="pos bronze">🥉</div>
+    <div class="leader-avatar" style="background:linear-gradient(135deg,#cd7f32,#8b4513)">🖌️</div>
+    <div>
+      <div class="leader-name">أحمد الفنان</div>
+      <div class="leader-sub">خبير • 15 رسمة</div>
+    </div>
+    <div class="leader-xp">7,850</div>
+  </div>
+
+  <div class="leader-item">
+    <div class="pos" style="color:rgba(255,255,255,.4)">4</div>
+    <div class="leader-avatar" style="background:linear-gradient(135deg,#333,#222)">🦋</div>
+    <div>
+      <div class="leader-name">سارة الملونة</div>
+      <div class="leader-sub">محترف</div>
+    </div>
+    <div class="leader-xp">5,400</div>
+  </div>
+
+  <div class="leader-item">
+    <div class="pos" style="color:rgba(255,255,255,.4)">5</div>
+    <div class="leader-avatar" style="background:linear-gradient(135deg,#1a1a2e,#16213e)">🌊</div>
+    <div>
+      <div class="leader-name">خالد الخطوط</div>
+      <div class="leader-sub">محترف</div>
+    </div>
+    <div class="leader-xp">4,980</div>
+  </div>
+
+  <!-- separator -->
+  <div style="text-align:center;color:rgba(255,255,255,.2);font-size:.8rem;margin:1rem 0">• • •</div>
+
+  <div class="leader-item me">
+    <div class="pos" style="color:var(--purple)">23</div>
+    <div class="leader-avatar" style="background:linear-gradient(135deg,var(--purple),var(--neon))">🎨</div>
+    <div>
+      <div class="leader-name">أنت 👈</div>
+      <div class="leader-sub">متقدم • 47 رسمة</div>
+    </div>
+    <div class="leader-xp" style="color:var(--purple)">1,240</div>
+  </div>
+
+</div>
+
+<!-- TAB: BADGES -->
+<div class="tab-content" id="tab-badges">
+  <div class="badges-grid">
+
+    <div class="badge-card earned">
+      <div class="badge-emoji">🎨</div>
+      <div class="badge-name">أول رسمة</div>
+      <div class="badge-desc">رسمت لأول مرة</div>
+    </div>
+
+    <div class="badge-card earned">
+      <div class="badge-emoji">🔥</div>
+      <div class="badge-name">سلسلة 7 أيام</div>
+      <div class="badge-desc">رسمت 7 أيام متتالية</div>
+    </div>
+
+    <div class="badge-card earned">
+      <div class="badge-emoji">⚡</div>
+      <div class="badge-name">تحدي السرعة</div>
+      <div class="badge-desc">أكملت تحدي 60 ثانية</div>
+    </div>
+
+    <div class="badge-card earned">
+      <div class="badge-emoji">🏆</div>
+      <div class="badge-name">فائز أول</div>
+      <div class="badge-desc">فزت بتحدي أسبوعي</div>
+    </div>
+
+    <div class="badge-card earned">
+      <div class="badge-emoji">🌈</div>
+      <div class="badge-name">ألوان قوس</div>
+      <div class="badge-desc">استخدمت 10 ألوان</div>
+    </div>
+
+    <div class="badge-card earned">
+      <div class="badge-emoji">👥</div>
+      <div class="badge-name">رسم تعاوني</div>
+      <div class="badge-desc">رسمت مع شخص آخر</div>
+    </div>
+
+    <div class="badge-card locked-badge">
+      <div class="badge-emoji">💎</div>
+      <div class="badge-name">محترف</div>
+      <div class="badge-desc">وصل 2,000 XP</div>
+    </div>
+
+    <div class="badge-card locked-badge">
+      <div class="badge-emoji">👑</div>
+      <div class="badge-name">أسطورة</div>
+      <div class="badge-desc">وصل 10,000 XP</div>
+    </div>
+
+    <div class="badge-card locked-badge">
+      <div class="badge-emoji">🌟</div>
+      <div class="badge-name">100 رسمة</div>
+      <div class="badge-desc">أكمل 100 رسمة</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- TAB: MISSIONS -->
+<div class="tab-content" id="tab-missions">
+
+  <p style="color:rgba(255,255,255,.35);font-size:.8rem;margin-bottom:1rem">تتجدد كل يوم في منتصف الليل ⏰</p>
+
+  <div class="mission-item">
+    <div class="mission-icon">🎨</div>
+    <div class="mission-info">
+      <div class="mission-title">ارسم 3 رسومات اليوم</div>
+      <div class="mission-prog-wrap">
+        <div class="mission-prog-fill" style="width:66%"></div>
+      </div>
+      <div style="font-size:.72rem;color:rgba(255,255,255,.35);margin-top:.3rem">2 / 3</div>
+    </div>
+    <div class="mission-reward">+50 XP</div>
+  </div>
+
+  <div class="mission-item">
+    <div class="mission-icon">⚡</div>
+    <div class="mission-info">
+      <div class="mission-title">أكمل تحدي السرعة</div>
+      <div class="mission-prog-wrap">
+        <div class="mission-prog-fill" style="width:100%;background:linear-gradient(90deg,var(--volt),#5cb800)"></div>
+      </div>
+      <div style="font-size:.72rem;color:var(--volt);margin-top:.3rem">✓ مكتمل!</div>
+    </div>
+    <div class="mission-done">✓ +30 XP</div>
+  </div>
+
+  <div class="mission-item">
+    <div class="mission-icon">🌈</div>
+    <div class="mission-info">
+      <div class="mission-title">استخدم 5 ألوان مختلفة</div>
+      <div class="mission-prog-wrap">
+        <div class="mission-prog-fill" style="width:40%"></div>
+      </div>
+      <div style="font-size:.72rem;color:rgba(255,255,255,.35);margin-top:.3rem">2 / 5</div>
+    </div>
+    <div class="mission-reward">+20 XP</div>
+  </div>
+
+  <div class="mission-item">
+    <div class="mission-icon">💾</div>
+    <div class="mission-info">
+      <div class="mission-title">احفظ رسمة</div>
+      <div class="mission-prog-wrap">
+        <div class="mission-prog-fill" style="width:0%"></div>
+      </div>
+      <div style="font-size:.72rem;color:rgba(255,255,255,.35);margin-top:.3rem">0 / 1</div>
+    </div>
+    <div class="mission-reward">+15 XP</div>
+  </div>
+
+  <div class="mission-item">
+    <div class="mission-icon">⏱</div>
+    <div class="mission-info">
+      <div class="mission-title">ارسم لمدة 10 دقائق</div>
+      <div class="mission-prog-wrap">
+        <div class="mission-prog-fill" style="width:80%"></div>
+      </div>
+      <div style="font-size:.72rem;color:rgba(255,255,255,.35);margin-top:.3rem">8 / 10 دقائق</div>
+    </div>
+    <div class="mission-reward">+40 XP</div>
+  </div>
+
+  <!-- XP gain button (demo) -->
+  <div style="margin-top:1.5rem;background:linear-gradient(135deg,rgba(255,62,108,.08),rgba(155,93,229,.08));border:1.5px solid rgba(255,62,108,.2);border-radius:16px;padding:1.2rem;text-align:center;">
+    <div style="font-size:.85rem;color:rgba(255,255,255,.5);margin-bottom:.8rem">جرب — اكسب XP!</div>
+    <button onclick="gainXP()" style="background:var(--neon);border:none;border-radius:12px;color:#fff;font-family:'Cairo',sans-serif;font-size:1rem;font-weight:900;padding:.8rem 2rem;cursor:pointer;box-shadow:0 4px 16px rgba(255,62,108,.4)">
+      +50 XP 🎉
+    </button>
+  </div>
+
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <a class="nav-btn" href="rasim.html">
+    <span class="nav-icon">🎨</span>
+    <span>الرسم</span>
+  </a>
+  <button class="nav-btn active">
+    <span class="nav-icon">🏆</span>
+    <span>الرتب</span>
+  </button>
+  <button class="nav-btn" onclick="alert('قريباً!')">
+    <span class="nav-icon">⚡</span>
+    <span>التحديات</span>
+  </button>
+  <button class="nav-btn" onclick="alert('قريباً!')">
+    <span class="nav-icon">🌐</span>
+    <span>الفيد</span>
+  </button>
+</div>
+
+<script>
+// Animate XP bar on load
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('xpFill').style.width = '62%'; // 1240/2000
+  }, 300);
+});
+
+// Tab switching
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    const names = ['ranks','leaders','badges','missions'];
+    t.classList.toggle('active', names[i] === name);
+  });
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+}
+
+// Demo XP gain
+let currentXP = 1240;
+function gainXP() {
+  currentXP += 50;
+  document.getElementById('topXP').textContent = currentXP.toLocaleString('ar') + ' XP';
+  const pct = Math.min(100, (currentXP / 2000) * 100);
+  document.getElementById('xpFill').style.width = pct + '%';
+
+  // animate
+  const btn = event.target;
+  btn.textContent = '✨ +50 XP';
+  btn.style.transform = 'scale(1.08)';
+  setTimeout(() => {
+    btn.textContent = '+50 XP 🎉';
+    btn.style.transform = 'scale(1)';
+  }, 600);
+
+  if (currentXP >= 2000) {
+    setTimeout(() => alert('🎉 مبروك! وصلت للمستوى المحترف!'), 300);
+  }
+}
+</script>
+</body>
+</html>
